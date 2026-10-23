@@ -4,6 +4,8 @@ import {WeatherGame,weatherScore} from './game.mjs?v=7';
 import {weatherLevel,rumble,motionEnabled} from './motion.mjs?v=7';
 import {weatherEffects} from './weather-effects.mjs?v=7';
 const $=id=>document.getElementById(id),game=new WeatherGame();
+let lastWearableMode='S';
+function wearableMode(mode){if(mode===lastWearableMode)return;lastWearableMode=mode;window.dispatchEvent(new CustomEvent('wearable-weather',{detail:{mode}}))}
 let active=false,navigate=()=>{},celebration=null,demo=null,timer=0,demoFrame=0,returnInterval=0,goHome=()=>{};const endingTimer=new SceneReturnTimer();
 export function setGameNavigation(fn,home){navigate=fn;goHome=home}
 const instructions=[['Gather the clouds','Close your hand into a fist and hold it. Watch the clouds gather.'],['Make it rain','Open your palm and sweep left and right to strengthen the rain.'],['Rumble the sky','Make a fist and move your wrist left and right to awaken the storm.'],['The sky answers your call.','You gathered clouds, summoned rain and awakened the thunder.']];
@@ -22,12 +24,12 @@ export function gameView(value,phase=0){
  const displayed=celebration?.phase??demo?.phase??game.phase;
  if(!value||phase!==displayed)cancelPlayback();
  if(value&&!celebration&&phase!==game.phase){game.reset();game.phase=phase;game.complete=phase===3;}
- active=value;$('gameHUD').classList.toggle('visible',value);$('gamePanel').classList.toggle('visible',value);$('stage').classList.toggle('game-active',value);
+ active=value;if(!value||phase===3)wearableMode('S');$('gameHUD').classList.toggle('visible',value);$('gamePanel').classList.toggle('visible',value);$('stage').classList.toggle('game-active',value);
  if(value){draw();if(phase===3)beginReturn()}else {weatherEffects(-1);weatherSound(-1)}
 }
 function draw(){
  const phase=celebration?.phase??game.phase,progress=celebration?1:demo?.progress??game.progress,complete=game.complete&&!celebration;
- weatherLevel(phase+1,progress);weatherEffects(complete?-1:phase,progress,!!celebration);weatherSound(complete?-1:phase,progress);
+ wearableMode(complete?'S':(progress>0||celebration||demo)?['W','R','T'][phase]||'S':'S');weatherLevel(phase+1,progress);weatherEffects(complete?-1:phase,progress,!!celebration);weatherSound(complete?-1:phase,progress);
  $('gameProgress').setAttribute('aria-valuenow',Math.round(complete?100:progress*100));
  $('gameTitle').textContent=complete?'The Dragon Awakens':'Awaken the Dragon';
  $('gameHeading').textContent=celebration?wins[phase]:instructions[phase][0];
