@@ -1,5 +1,5 @@
 import {loadMotion,showMotion,motionEnabled,setMotion} from './motion.mjs?v=7';
-import {gameView,gameInput,inGame,setGameNavigation} from './game-ui.mjs?v=12';
+import {gameView,gameInput,inGame,setGameNavigation} from './game-ui.mjs?v=13';
 import {SwipeGate,SceneState} from './engine.mjs?v=8';
 import {weatherPose} from './game.mjs?v=10';
 import {defaultScenes,restoreScenes,artworkIndex,weatherPhase,weatherSceneIndex} from './scenes.mjs?v=11';
