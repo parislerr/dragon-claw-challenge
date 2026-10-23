@@ -17,3 +17,11 @@
 #stage:fullscreen #gameHUD .game-instruction strong{font-size:clamp(10px,1.7cqw,24px)}
 #stage:fullscreen #gameHUD .game-instruction span{font-size:clamp(9px,1.2cqw,17px)}
 #stage:fullscreen #gameHUD .stage-score{font-size:clamp(13px,1.8cqw,28px)}
+
+/* Final reflection fits both lines inside the porcelain title panel. */
+#gameHUD.victory .game-title,#stage:fullscreen #gameHUD.victory .game-title{top:12%;width:46%;text-align:center;font-size:2.55cqw;line-height:1.15;color:#39369a}
+#gameHUD.victory .game-subtitle{display:block;position:absolute;top:18%;left:50%;transform:translate(-50%,-50%);width:46%;margin:0;text-align:center;white-space:nowrap;font:bold 1.65cqw/1.2 Georgia,serif;color:#39369a}
+
+.ending-lettering{display:none}#gameHUD.victory .ending-lettering{display:block;position:absolute;left:50%;top:9.6%;transform:translateX(-50%);width:40%;height:auto}#gameHUD.victory .game-title,#stage:fullscreen #gameHUD.victory .game-title,#gameHUD.victory .game-subtitle{display:none}
+
+#gameHUD.victory .return-countdown,#gameHUD.victory #gameProgress{display:none}
