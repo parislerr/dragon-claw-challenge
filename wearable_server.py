@@ -36,7 +36,7 @@ def discover_xlot(preferred=None):
             with opener.open("http://" + host + "/status", timeout=0.65) as response:
                 data = json.loads(response.read().decode())
             # The project's firmware reports mode; reject unrelated web devices.
-            if isinstance(data, dict) and data.get("mode") in ("STOP", "WIND", "RAIN", "THUNDER", "TEST"):
+            if (isinstance(data, dict) and data.get("mode") in ("STOP", "WIND", "RAIN", "THUNDER", "TEST") and data.get("ready") is not False):
                 return host
         except (OSError, ValueError, TimeoutError, KeyError):
             pass
@@ -96,6 +96,10 @@ class XLOT:
         if mode not in ("W", "R", "T", "S"):
             raise ValueError("Invalid mode")
         with self.lock:
+            if mode != "S":
+                state = json.loads(self.request("/status"))
+                if state.get("ready") is False:
+                    raise ConnectionError("PCA9685 not detected by XLOT; motor commands disabled")
             result = self.request("/command?mode=" + mode)
             self.mode = mode
             self.last_command = time.monotonic()
@@ -148,7 +152,8 @@ class Handler(SimpleHTTPRequestHandler):
         if urlsplit(self.path).path == "/api/wearable/status":
             try:
                 raw=self.server.xlot.request("/status")
-                self.respond(200,{"ok":True,**json.loads(raw)})
+                device=json.loads(raw)
+                self.respond(200,{"ok":True,**device,"motor_count":len(device.get("motors",[])) if isinstance(device.get("motors"),list) else 1})
             except Exception as exc:
                 self.respond(503,{"ok":False,"error":str(exc)})
         else:
