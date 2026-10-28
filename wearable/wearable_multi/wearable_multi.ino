@@ -19,6 +19,10 @@ Mode currentMode=MODE_STOP;
 bool pcaReady=false;
 uint8_t motorPower[4]={0,0,0,0};
 uint32_t modeStart=0, lastHeartbeat=0, lastWifiRetry=0;
+// Rain: independent pulse expiry and randomly scheduled drops.
+uint32_t nextRainDrop=0;
+uint32_t rainOffAt[MOTOR_COUNT]={0,0,0,0};
+int lastRainMotor=-1;
 void writeMotor(uint8_t index,uint8_t power){
   if(!pcaReady || index>=MOTOR_COUNT)return;
   power=constrain(power,0,100);
@@ -29,10 +33,53 @@ void writeMotor(uint8_t index,uint8_t power){
 void allMotorsOff(){for(uint8_t i=0;i<MOTOR_COUNT;i++)writeMotor(i,0);}
 void setAllMotors(uint8_t p){for(uint8_t i=0;i<MOTOR_COUNT;i++)writeMotor(i,p);}
 void stopMotors(){allMotorsOff();currentMode=MODE_STOP;Serial.println("Mode -> STOP");}
-void startMode(Mode m){if(!pcaReady)return;stopMotors();currentMode=m;modeStart=millis();lastHeartbeat=millis();}
+void startMode(Mode m){
+  if(!pcaReady)return;
+  stopMotors();
+  currentMode=m;
+  modeStart=millis();
+  lastHeartbeat=millis();
+  if(m==MODE_RAIN){
+    nextRainDrop=millis();
+    lastRainMotor=-1;
+    for(uint8_t i=0;i<MOTOR_COUNT;i++)rainOffAt[i]=0;
+  }
+}
 void startTest(int i){if(!pcaReady||i<0||i>=MOTOR_COUNT)return;startMode(MODE_TEST);writeMotor(i,TEST_POWER);Serial.printf("Testing Motor %d\n",i+1);}
-void updateWind(){uint8_t active=((millis()-modeStart)/300)%4;for(uint8_t i=0;i<4;i++)writeMotor(i,i==active?WIND_POWER:0);}
-void updateRain(){uint32_t t=millis()-modeStart;bool pulse=t%320<110,first=(t/320)%2==0;for(uint8_t i=0;i<4;i++)writeMotor(i,pulse&&((first&&(i==0||i==2))||(!first&&(i==1||i==3)))?RAIN_POWER:0);}
+// Wind: each motor stays on 450 ms, next starts every 300 ms.
+// 150 ms overlap, including M4 -> M1 across cycle boundary.
+void updateWind(){
+  const uint32_t STEP_MS=300, PULSE_MS=450;
+  const uint32_t CYCLE_MS=STEP_MS*MOTOR_COUNT;
+  uint32_t phase=(millis()-modeStart)%CYCLE_MS;
+  for(uint8_t i=0;i<MOTOR_COUNT;i++){
+    uint32_t elapsed=(phase+CYCLE_MS-i*STEP_MS)%CYCLE_MS;
+    writeMotor(i,elapsed<PULSE_MS?WIND_POWER:0);
+  }
+}
+// Rain: non-repeating random raindrops, 60-150 ms each,
+// 80-250 ms between starts; max two motors active at a time.
+void updateRain(){
+  uint32_t now=millis();
+  for(uint8_t i=0;i<MOTOR_COUNT;i++){
+    if(rainOffAt[i]!=0 && (int32_t)(now-rainOffAt[i])>=0){
+      writeMotor(i,0);
+      rainOffAt[i]=0;
+    }
+  }
+  if((int32_t)(now-nextRainDrop)<0)return;
+  uint8_t selected=random(MOTOR_COUNT);
+  if(selected==lastRainMotor)selected=(selected+random(1,MOTOR_COUNT))%MOTOR_COUNT;
+  // Never cut off an existing drop; skip if chosen channel is busy.
+  if(rainOffAt[selected]==0){
+    uint32_t duration=random(60,151);
+    uint8_t power=random(30,46);
+    writeMotor(selected,power);
+    rainOffAt[selected]=now+duration;
+    lastRainMotor=selected;
+  }
+  nextRainDrop=now+random(80,251);
+}
 void updateThunder(){uint32_t t=(millis()-modeStart)%2400;if(t<180||(t>=420&&t<700))setAllMotors(THUNDER_POWER);else allMotorsOff();}
 void initializePCA(){
   Serial.println("Initializing I2C...");
@@ -98,7 +145,8 @@ void connectWiFi(){
 }
 void setup(){
   Serial.begin(115200);delay(1200);
-  Serial.println("Dragon Claw 4-Motor V4");
+  randomSeed(esp_random());
+  Serial.println("Dragon Claw 4-Motor V4.1 - Overlap Wind / Random Rain");
   initializePCA();connectWiFi();
   server.on("/",[](){server.send_P(200,"text/html; charset=utf-8",PAGE);});
   server.on("/test",handleTest);server.on("/command",handleCommand);
