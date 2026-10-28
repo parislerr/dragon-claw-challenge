@@ -5,7 +5,7 @@ This is the **four-motor** version of the wearable firmware. It is added alongsi
 ## Hardware
 - XLOT-Hermes (ESP32-S2), PCA9685, four compatible haptic driver modules.
 - I2C: SDA GPIO17, SCL GPIO18; PCA9685 address `0x40`.
-- Motor channels: CH0, CH1, CH2, CH3.
+- Motor channels: CH0, CH1, CH14, CH15.
 - Arduino library: vendor-supplied `XLOT_PWMServoDriver`.
 - Confirm motor power voltage, polarity, shared ground and the vendor-specific power routing before applying power.
 
