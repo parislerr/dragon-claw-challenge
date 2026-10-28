@@ -10,7 +10,7 @@ const char* WIFI_SSID = "YOUR_WIFI_SSID";
 const char* WIFI_PASS = "YOUR_WIFI_PASSWORD";
 constexpr uint8_t SDA_PIN=17, SCL_PIN=18, PCA_ADDR=0x40, MOTOR_COUNT=4;
 constexpr uint32_t HEARTBEAT_TIMEOUT=6000, TEST_DURATION=1000;
-const uint8_t MOTOR_CHANNELS[4]={0,1,14,15};
+const uint8_t MOTOR_CHANNELS[4]={6,7,8,9};
 const uint8_t TEST_POWER=30, WIND_POWER=35, RAIN_POWER=40, THUNDER_POWER=50;
 WebServer server(80);
 XLOT_PWMServoDriver pwm(PCA_ADDR);
