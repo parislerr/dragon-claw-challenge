@@ -17,3 +17,33 @@
 #stage:fullscreen #gameHUD .game-instruction strong{font-size:clamp(10px,1.7cqw,24px)}
 #stage:fullscreen #gameHUD .game-instruction span{font-size:clamp(9px,1.2cqw,17px)}
 #stage:fullscreen #gameHUD .stage-score{font-size:clamp(13px,1.8cqw,28px)}
+
+/* Final reflection fits both lines inside the porcelain title panel. */
+#gameHUD.victory .game-title,#stage:fullscreen #gameHUD.victory .game-title{top:12%;width:46%;text-align:center;font-size:2.55cqw;line-height:1.15;color:#39369a}
+#gameHUD.victory .game-subtitle{display:block;position:absolute;top:18%;left:50%;transform:translate(-50%,-50%);width:46%;margin:0;text-align:center;white-space:nowrap;font:bold 1.65cqw/1.2 Georgia,serif;color:#39369a}
+
+.ending-lettering{display:none}#gameHUD.victory .ending-lettering{display:block;position:absolute;left:50%;top:9.6%;transform:translateX(-50%);width:40%;height:auto}#gameHUD.victory .game-title,#stage:fullscreen #gameHUD.victory .game-title,#gameHUD.victory .game-subtitle{display:none}
+
+#gameHUD.victory .return-countdown,#gameHUD.victory #gameProgress{display:none}
+
+/* Closing message matches the supplied blue-and-white reference card. */
+#gameHUD.victory .game-instruction,#stage:fullscreen #gameHUD.victory .game-instruction{width:29%;background:#fff;border:2px solid #d1dfee;border-radius:1.6cqw;padding:1.7cqw 1.2cqw 2.3cqw;box-shadow:0 5px 25px #254e9c18}
+#gameHUD.victory .game-instruction strong,#stage:fullscreen #gameHUD.victory .game-instruction strong{font:bold 1.75cqw/1.25 Georgia,serif;color:#39369a;margin:0 0 1.1cqw}
+#gameHUD.victory .game-instruction #gameInstruction,#stage:fullscreen #gameHUD.victory .game-instruction #gameInstruction{display:block;white-space:pre-line;font:1.15cqw/1.35 Georgia,serif;color:#54749e}
+
+/* Updated PDF: consistent weather cards and original final reflection lettering. */
+/* Match the final reflection card; block text avoids inherited oversized line boxes. */
+#gameHUD:not(.victory) .game-instruction,#stage:fullscreen #gameHUD:not(.victory) .game-instruction{width:25.3%;right:3.4%;bottom:5.8%;background:#fff;border:.12cqw solid #d1dfee;border-radius:1.6cqw;padding:1.6cqw 1.4cqw 1.2cqw;box-shadow:.6cqw .6cqw 1.8cqw #54749e20;font:1.1cqw/1.3 "Times New Roman",Times,serif;color:#39369a}
+#gameHUD:not(.victory) .game-instruction strong,#stage:fullscreen #gameHUD:not(.victory) .game-instruction strong{display:block;font:bold 1.5cqw/1.2 "Times New Roman",Times,serif;color:#39369a;margin:0 0 .8cqw}
+#gameHUD:not(.victory) .game-instruction #gameInstruction,#stage:fullscreen #gameHUD:not(.victory) .game-instruction #gameInstruction{display:block;min-height:2.6em;white-space:normal;text-wrap:balance;font:1.1cqw/1.3 "Times New Roman",Times,serif;color:#54749e}
+#gameHUD:not(.victory) #gameProgress{height:.3cqw;margin-top:1cqw;border-radius:1cqw}
+#gameHUD .badge{font-family:Arial,sans-serif}#gameHUD .badge.current,#gameHUD .badge.done{background:#39369a;color:white;border-color:#39369a}
+#motionScene[data-scene="11"] .motion-text{display:block}
+#gameHUD.victory .ending-lettering,#gameHUD.victory .game-instruction,#gameHUD.victory .stage-score{display:none}
+#gameHUD .badge.done:not(.current){background:#fffffff0;color:#8291aa;border-color:#9bb2d3}
+
+.stage-score{color:#39369a}
+
+/* Both painted lightning banks shake during the final rumble. */
+@keyframes paintedThunder{0%,100%{opacity:.55;transform:translate(0,0)}18%{opacity:1;transform:translate(8px,-3px)}35%{opacity:.65;transform:translate(-7px,3px)}55%{opacity:1;transform:translate(6px,-2px)}75%{opacity:.7;transform:translate(-4px,2px)}}
+@media(prefers-reduced-motion:reduce){#motionScene.rumbling .lightning{animation:none!important}}

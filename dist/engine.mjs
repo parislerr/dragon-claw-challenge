@@ -16,6 +16,7 @@ export class SwipeGate {
    return false;
   }
   this.points.push({x,y,t});this.points=this.points.filter(p=>t-p.t<=1100);
+  // Short travel with directional and three-observation checks to reject jitter.
   for(let i=0;i<this.points.length-2;i++){
    const a=this.points[i],dx=a.x-x,dy=Math.abs(y-a.y),dt=t-a.t;
    if(dt>=80&&dx>=.11&&dy<=.24&&dx>dy*.85){this.reset();return true}
