@@ -1,8 +1,8 @@
 import {toggleSound,weatherSound,thunderSound} from './audio.mjs?v=17';
 import {SceneReturnTimer} from './engine.mjs?v=7';
 import {WeatherGame,weatherScore,STAGE_POINTS,STAGE_DURATION} from './game.mjs?v=20';
-import {weatherLevel,rumble,motionEnabled} from './motion.mjs?v=26';
-import {weatherEffects} from './weather-effects.mjs?v=26';
+import {weatherLevel,rumble,motionEnabled} from './motion.mjs?v=27';
+import {weatherEffects} from './weather-effects.mjs?v=27';
 const $=id=>document.getElementById(id),game=new WeatherGame();
 let active=false,navigate=()=>{},celebration=null,demo=null,timer=0,demoFrame=0,returnInterval=0,goHome=()=>{};const endingTimer=new SceneReturnTimer();
 export function setGameNavigation(fn,home){navigate=fn;goHome=home}

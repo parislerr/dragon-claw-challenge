@@ -25,7 +25,7 @@ Use a local web server rather than double-clicking index.html: the game uses Jav
 ## How to play
 
 - Swipe left to move through the opening story scenes.
-- Slides 02–07 play narration. Their gesture icons appear and forward navigation unlocks only after the recording finishes. Use the narration control to pause, resume or retry playback.
+- Slides 02–07 play optional narration with their gesture prompts visible from the start. Use the displayed swipe or finger-count gesture, Next scene button or right arrow key to skip ahead at any time; leaving a slide stops its recording. Use the narration control to pause, resume or retry playback.
 - Follow the displayed finger-count instructions in the claw scenes: hold 3, 4 or 5 fingers as prompted. The existing gestures are preserved.
 - Gather clouds: close your hand into a fist and hold it.
 - Make rain: move an open hand left and right.

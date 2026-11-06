@@ -18,7 +18,7 @@ narration.pause();assert.equal(narration.snapshot().status,'paused');assert(narr
 await narration.play();first.end();assert.equal(narration.snapshot().status,'complete');assert(!narration.snapshot().pending);
 narration.enter(null);assert(!narration.snapshot().active);assert(first.pauses>0);
 narration.enter('slide-02.mp3');assert.equal(players.length,2);assert(narration.snapshot().pending,'Re-entry requires fresh playback');
-first.end();assert(narration.snapshot().pending,'Stale completion must not unlock the new visit');
+first.end();assert(narration.snapshot().pending,'Stale completion must not finish narration on the new visit');
 narration.enter(null);players[1].end();assert.equal(narration.snapshot().status,'idle');
 
 const blockedPlayer=new Player('slide-02.mp3');blockedPlayer.rejection={name:'NotAllowedError'};
@@ -32,9 +32,9 @@ let rejectOld;
 const pendingPlayer=new Player('slide-02.mp3');pendingPlayer.play=()=>new Promise((_,reject)=>{rejectOld=reject;});
 const pending=createNarration({createAudio:()=>pendingPlayer});pending.enter('slide-02.mp3');pending.enter(null);
 rejectOld({name:'NotAllowedError'});await Promise.resolve();assert.equal(pending.snapshot().status,'idle');
-console.log('Passed: completion-only reveal, pause/resume, repeated render, restart on re-entry, stale events, autoplay fallback and retry.');
+console.log('Passed: playback completion, pause/resume, repeated render, restart on re-entry, stale events, autoplay fallback and retry.');
 
-// Switching directly between narrated slides cancels the old player and locks the new cue.
+// Skipping directly between narrated slides cancels the old player and starts the new recording.
 narration.enter('slide-03.mp3');const third=players.at(-1);
 narration.enter('slide-04.mp3');const fourth=players.at(-1);
 assert(third.pauses>0);assert.equal(third.src,'');assert(narration.snapshot().pending);
