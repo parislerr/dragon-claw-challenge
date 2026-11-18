@@ -1,6 +1,6 @@
 # Dragon Claw Challenge — Hardware Handover
 
-This repository's `main` branch contains the final browser experience. The wearable integration is being prepared separately; do not assume this handover branch is a verified integrated build until hardware testing is completed.
+This repository's `main` branch contains the final browser experience. This handover branch combines the final website with the local wearable bridge. Static checks do not replace real-device testing.
 
 ## XLOT-Hermes Wi-Fi configuration
 
@@ -24,7 +24,7 @@ Never commit real hotspot passwords to GitHub. Changing hotspot credentials in G
 
 ## Raspberry Pi
 
-The working Raspberry Pi environment is on the SD card handed over with the physical prototype. Keep the SD card with the unit and do not reimage it. The repository should eventually include startup instructions and the exact service/script entry point used on that card.
+The working Raspberry Pi environment is on the SD card handed over with the physical prototype. Keep the SD card with the unit and do not reimage it. The exact startup service/script on the SD card has not been independently verified and should be documented after inspecting the Pi.
 
 ## Integration checks before merging into main
 
@@ -33,4 +33,4 @@ The working Raspberry Pi environment is on the SD card handed over with the phys
 - Confirm the uploaded V4 firmware is the intended handover version; its Wind pattern overlaps, Rain switches pairs every 300 ms, and Thunder PWM is 50%.
 - Verify timing documentation and report figures against the actual flashed firmware.
 - Test browser-only experience and the integrated physical system separately.
-- Only then merge the verified integration branch into `main`.
+- After reviewing the integration and performing on-device checks, merge into `main`.
