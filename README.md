@@ -54,6 +54,22 @@ node narration.test.mjs
 
 Custom scene changes and uploaded transitions are saved only in that browser; they do not automatically update this repository or the live website.
 
+## Wearable integration (local hardware only)
+
+The public Vercel site remains a browser-only preview. To control the four-motor XLOT-Hermes wearable, use the local bridge instead.
+
+1. The supplied firmware is `wearable/wearable_multi/wearable_multi.ino` (V4.0). Its `WIFI_SSID` and `WIFI_PASS` values are intentionally set to `"xxx"` placeholders. **Never commit real credentials.** The currently flashed board was configured for a teammate's hotspot.
+2. If using a different hotspot, replace both placeholders **locally in Arduino IDE**, upload the sketch again, and note the new IP in Serial Monitor (115200 baud). Connect your computer and XLOT to the same hotspot.
+3. Test the device's `http://<XLOT_IP>/status` and individual motors through `http://<XLOT_IP>/`.
+4. From the repository root run `python3 wearable_server.py --xlot <XLOT_IP>` and open `http://localhost:8765` in Chrome or Edge.
+5. Click **Check connection**, test Wind, Rain, Thunder and Stop, then test camera-driven weather gestures. The local server forwards commands and sends heartbeats. The static-only server and public Vercel site do **not** provide hardware control.
+
+The bridge requires an explicitly supplied device IP/hostname and does not scan the network. XLOT firmware stops active vibration after six seconds without a heartbeat. See [hardware handover instructions](docs/HARDWARE_HANDOVER.md).
+
+**Hardware timing (V4.0):** Wind 300 ms pulses with 200 ms steps (35% PWM); Rain 180 ms pulses alternating motor pairs every 300 ms (45% PWM); Thunder 180 ms and 280 ms simultaneous bursts (50% PWM). PWM percentages are programmed duty cycles, not measured vibration amplitude.
+
+**Raspberry Pi:** the configured Pi environment remains on the SD card supplied with the physical prototype. Its current startup configuration must be verified on the device; the GitHub bridge does not replace that installed environment.
+
 ## Sharing and artwork
 
 This repository shares the class prototype and its supplied/generated artwork for teammate review and collaboration. No open-source license is granted by this repository. Third-party libraries retain their respective licenses.
