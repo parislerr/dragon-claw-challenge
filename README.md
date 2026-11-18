@@ -2,7 +2,11 @@
 
 **CDE5312 — Beyond the Surface: Exploring Interactive Wearables | Team 3**
 
-Dragon Claw Challenge is a gesture-based, multisensory museum experience developed for ArCH Square. Visitors explore dragon claw symbolism through finger-count gestures and trigger wind, rain and thunder effects through hand movements. The final experience combines visual storytelling, cultural narration and audio, with optional four-motor wearable haptic feedback when operated locally.
+## Project Overview
+
+Dragon Claw Challenge is a gesture-based, multisensory museum installation developed by Team 3 for **CDE5312: Beyond the Surface — Exploring Interactive Wearables**, in collaboration with **ArCH Square**, Singapore's centre for archaeology and intangible cultural heritage. The project addresses a challenge in museum interpretation: visitors may recognise dragon motifs on Chinese ceramic artefacts without noticing details such as claw counts or understanding their cultural significance.
+
+Visitors explore dragon claw symbolism through three-, four-, and five-finger gestures, then use hand movements to activate wind, rain, and thunder effects. The experience combines camera-based gesture recognition, porcelain-inspired animations, cultural narration, audio, and a wrist-worn device with four vibration motors. Its aim is to connect embodied interaction with cultural interpretation and encourage visitors to return to the original artefacts after the digital experience.
 
 ## Choose how to run
 
