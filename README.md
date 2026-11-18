@@ -1,75 +1,80 @@
 # Dragon Claw Challenge
 
-A blue-and-white porcelain-inspired hand-gesture game for the CDE 5312 project.
+**CDE5312 — Beyond the Surface: Exploring Interactive Wearables | Team 3**
 
-**Play online:** https://dragon-claw-challenge.vercel.app/
+Dragon Claw Challenge is a gesture-based, multisensory museum experience developed for ArCH Square. Visitors explore dragon claw symbolism through finger-count gestures and trigger wind, rain and thunder effects through hand movements. The final experience combines visual storytelling, cultural narration and audio, with optional four-motor wearable haptic feedback when operated locally.
 
-## Download and play
+## Choose how to run
 
-1. Download the [latest source ZIP](https://github.com/parislerr/dragon-claw-challenge/archive/refs/heads/main.zip) and unzip the folder. It includes the complete source, artwork and narration recordings.
-2. Install Python 3 if it is not already available.
-3. Open a terminal in the downloaded folder and run:
+| Version | What it supports | Access |
+| --- | --- | --- |
+| **Online demo (Vercel)** | Final interactive game, camera gestures, animation, narration and audio. **No physical wearable connection.** | https://dragon-claw-challenge.vercel.app/ |
+| **Local wearable-enabled version** | Final interactive game **plus** XLOT-Hermes four-motor vibration control. | Download this integration branch and run the Python bridge at `http://localhost:8765`. |
 
-```sh
-python3 -m http.server 8765 --directory dist
-```
+The Vercel demo is a browser-only experience; it cannot directly communicate with the wearable. For real haptic feedback, run the game locally with `wearable_server.py` and a correctly configured XLOT-Hermes device.
 
-On Windows, use `py -m http.server 8765 --directory dist` instead.
+## Run the online / browser-only experience locally
 
-4. Open http://localhost:8765 in Chrome or Edge.
-5. Click **Enable camera** and allow access for gesture control, or use the on-screen buttons.
-6. Click **Sound off** to enable music and weather sounds.
+1. Download the source ZIP for this branch: https://github.com/parislerr/dragon-claw-challenge/archive/refs/heads/handover/final-integration.zip and extract it.
+2. Install Python 3 if needed. Open a terminal in the extracted project folder.
+3. Run `python3 -m http.server 8765 --directory dist` (Windows: `py -m http.server 8765 --directory dist`).
+4. Open http://localhost:8765 in Chrome or Edge. Enable camera access to use hand gestures.
 
-Use a local web server rather than double-clicking index.html: the game uses JavaScript modules and loads artwork data. Internet access is needed to load the hand-tracking library and model. Camera images are processed in the browser.
+**This static-server method does not connect to the wearable.** Internet access is required to load MediaPipe hand tracking and its model; camera processing occurs in the browser. Do not open `dist/index.html` directly from the filesystem.
+
+## Run with the physical wearable
+
+**Hardware:** XLOT-Hermes (ESP32-S2), PCA9685, four vibration motors, power supply, and a computer or Raspberry Pi on the same hotspot.
+
+1. The provided V4.0 firmware is `wearable/wearable_multi/wearable_multi.ino`. Its `WIFI_SSID` and `WIFI_PASS` are intentionally set to `"xxx"` **placeholders**. The XLOT board handed over was previously flashed for a teammate's hotspot; the GitHub placeholders do not change its existing configuration.
+2. **When changing hotspots:** open the sketch in Arduino IDE, replace both placeholders locally with the new SSID and password, compile, and **re-upload** the firmware to the XLOT-Hermes. Do not publish actual Wi-Fi credentials.
+3. Open Arduino Serial Monitor at **115200 baud**, confirm the Wi-Fi connection and note the XLOT's current IP address. The IP may change when reconnecting.
+4. Connect the computer and XLOT to the same hotspot. Check `http://<XLOT_IP>/status`, then open `http://<XLOT_IP>/` to test the four motors individually.
+5. From the downloaded repository root, run:
+
+   ```sh
+   python3 wearable_server.py --xlot <XLOT_IP>
+   ```
+
+   Replace `<XLOT_IP>` with the actual device address, without angle brackets.
+6. Open **http://localhost:8765** in Chrome or Edge. Click **Check connection**, then test **Wind**, **Rain**, **Thunder**, and **Stop**. Enable the camera to test gesture-driven vibration.
+
+**Important:** Use `wearable_server.py` rather than `python3 -m http.server` when connecting to the wearable. The Python bridge forwards HTTP commands to the XLOT and sends heartbeats. The XLOT firmware stops active vibration after approximately six seconds without a heartbeat. This local setup has not yet been verified end-to-end on the handed-over hardware.
+
+For device-specific instructions and troubleshooting, see [Hardware Handover](docs/HARDWARE_HANDOVER.md).
 
 ## How to play
 
 - Swipe left to move through the opening story scenes.
-- Slides 02–07 play optional narration with their gesture prompts visible from the start. Use the displayed swipe or finger-count gesture, Next scene button or right arrow key to skip ahead at any time; leaving a slide stops its recording. Use the narration control to pause, resume or retry playback.
-- Follow the displayed finger-count instructions in the claw scenes: hold 3, 4 or 5 fingers as prompted. The existing gestures are preserved.
-- Gather clouds: close your hand into a fist and hold it.
-- Make rain: move an open hand left and right.
-- Rumble the sky: point your index finger upward and hold it. Both painted lightning banks flash and rumble as progress builds.
+- Scenes 02–07 include optional spoken narration. The Next scene button and right arrow key can also advance the story.
+- Show **3, 4, or 5 fingers** when prompted to explore dragon claw configurations.
+- **Wind:** close your hand into a fist and hold.
+- **Rain:** move an open hand left and right.
+- **Thunder:** point your index finger upward and hold.
 - Lower your hand briefly between challenges.
-- Each weather challenge takes eight seconds of valid gestures and awards 1,000 points, for 3,000 points total. Progress pauses when the gesture stops.
-- The ending returns to scene 01 after 15 seconds.
+- Each weather challenge takes eight seconds of valid gestures and awards 1,000 points, for 3,000 points total.
+- The ending returns to the beginning after 15 seconds.
 
-## Contents
+## Project files
 
-- `dist/`: complete playable website, including all artwork and animation layers.
-- `dist/audio.mjs`: original synthesized plucked-string/flute music and weather effects.
-- `dist/app.mjs`: scene controls and camera integration.
-- `dist/game.mjs`: weather-game logic.
-- `dist/narration.mjs` and `dist/narration-scenes.mjs`: playback and gesture-cue timing for slides 02–07.
-- `dist/assets/audio/`: the supplied slide narration recordings.
-- `test.mjs`: checks for gestures, scoring, scenes and artwork.
-- `narration.test.mjs`: checks for narration completion, playback controls and cue timing.
+| Path | Purpose |
+| --- | --- |
+| `dist/` | Final browser game, artwork, narration, animation and interaction code |
+| `dist/app.mjs`, `dist/game-ui.mjs`, `dist/game.mjs` | Camera/scene controls, game interface and weather logic |
+| `dist/wearable-ui.mjs` | Local wearable connection checks, commands and test buttons |
+| `wearable_server.py` | Local Python HTTP bridge between the game and XLOT-Hermes |
+| `wearable/wearable_multi/wearable_multi.ino` | Four-motor XLOT-Hermes Arduino V4.0 firmware |
+| `docs/HARDWARE_HANDOVER.md` | Hotspot, firmware and hardware handover instructions |
+| `test.mjs`, `narration.test.mjs` | Browser-game and narration tests |
 
-No build step or package installation is needed. To run the checks with Node.js installed:
+The firmware's programmed patterns are: Wind 300 ms pulses at 200 ms steps (35% PWM); Rain 180 ms pulses alternating motor pairs every 300 ms (45% PWM); Thunder simultaneous 180 ms and 280 ms bursts (50% PWM). PWM settings are duty cycles, not measured vibration amplitude.
 
-```sh
-node test.mjs
-node narration.test.mjs
-```
+## Raspberry Pi handover
 
-Custom scene changes and uploaded transitions are saved only in that browser; they do not automatically update this repository or the live website.
+The Raspberry Pi's existing software environment is stored on the SD card supplied with the assembled physical prototype. The SD card is the handover copy of that deployment. The exact Pi startup command/service and its compatibility with the latest integrated branch have **not yet been independently verified**. Do not overwrite or reimage the card without backing it up.
 
-## Wearable integration (local hardware only)
+## Optional software checks
 
-The public Vercel site remains a browser-only preview. To control the four-motor XLOT-Hermes wearable, use the local bridge instead.
+With Node.js installed, run `node test.mjs` and `node narration.test.mjs` from the repository root. These checks do not replace testing the physical wearable.
 
-1. The supplied firmware is `wearable/wearable_multi/wearable_multi.ino` (V4.0). Its `WIFI_SSID` and `WIFI_PASS` values are intentionally set to `"xxx"` placeholders. **Never commit real credentials.** The currently flashed board was configured for a teammate's hotspot.
-2. If using a different hotspot, replace both placeholders **locally in Arduino IDE**, upload the sketch again, and note the new IP in Serial Monitor (115200 baud). Connect your computer and XLOT to the same hotspot.
-3. Test the device's `http://<XLOT_IP>/status` and individual motors through `http://<XLOT_IP>/`.
-4. From the repository root run `python3 wearable_server.py --xlot <XLOT_IP>` and open `http://localhost:8765` in Chrome or Edge.
-5. Click **Check connection**, test Wind, Rain, Thunder and Stop, then test camera-driven weather gestures. The local server forwards commands and sends heartbeats. The static-only server and public Vercel site do **not** provide hardware control.
-
-The bridge requires an explicitly supplied device IP/hostname and does not scan the network. XLOT firmware stops active vibration after six seconds without a heartbeat. See [hardware handover instructions](docs/HARDWARE_HANDOVER.md).
-
-**Hardware timing (V4.0):** Wind 300 ms pulses with 200 ms steps (35% PWM); Rain 180 ms pulses alternating motor pairs every 300 ms (45% PWM); Thunder 180 ms and 280 ms simultaneous bursts (50% PWM). PWM percentages are programmed duty cycles, not measured vibration amplitude.
-
-**Raspberry Pi:** the configured Pi environment remains on the SD card supplied with the physical prototype. Its current startup configuration must be verified on the device; the GitHub bridge does not replace that installed environment.
-
-## Sharing and artwork
-
-This repository shares the class prototype and its supplied/generated artwork for teammate review and collaboration. No open-source license is granted by this repository. Third-party libraries retain their respective licenses.
+Changes made through the browser's scene editor are stored on that browser/device and do not automatically update the repository or Vercel deployment.
