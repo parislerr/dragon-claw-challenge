@@ -75,7 +75,7 @@ The firmware's programmed patterns are: Wind 300 ms pulses at 200 ms steps (35% 
 
 ## Raspberry Pi handover
 
-The Raspberry Pi's existing software environment is stored on the SD card supplied with the assembled physical prototype. The SD card is the handover copy of that deployment. The exact Pi startup command/service and its compatibility with the latest integrated branch have **not yet been independently verified**. Do not overwrite or reimage the card without backing it up.
+The Raspberry Pi is provided with its configured SD card, which contains the software environment used for the project demonstration. The existing setup can be retained for future demonstrations. Please keep the SD card with the Raspberry Pi when handing over the physical prototype.
 
 ## Optional software checks
 
