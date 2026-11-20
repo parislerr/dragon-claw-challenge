@@ -10,6 +10,7 @@ const instructions=[['Gather the clouds','Hold a fist to gather 1,000 points. Ke
 const wins=['Clouds gathered! +1,000','Rain summoned! +1,000','Sky awakened! +1,000'];
 const totalPoints=STAGE_POINTS.reduce((a,b)=>a+b,0).toLocaleString('en');
 export function inGame(){return active}
+function wearableMode(mode){window.dispatchEvent(new CustomEvent('wearable-weather',{detail:{mode}}))}
 function cancelPlayback(){clearTimeout(timer);cancelAnimationFrame(demoFrame);celebration=null;demo=null}
 function cancelReturn(){clearInterval(returnInterval);returnInterval=0;endingTimer.cancel();$('returnCountdown').hidden=true}
 function beginReturn(){
@@ -19,10 +20,11 @@ function beginReturn(){
 }
 export function gameView(value,phase=0){
  if(!value||phase!==3)cancelReturn();
+ if(!value||phase===3)wearableMode('S');
  const hud=$('gameHUD');if(value&&hud.dataset.phase!==String(phase)){hud.style.animation='none';void hud.offsetWidth;hud.style.animation='';hud.dataset.phase=phase}hud.classList.toggle('motion-paused',!motionEnabled());
  const displayed=celebration?.phase??demo?.phase??game.phase;
  if(!value||phase!==displayed)cancelPlayback();
- if(value&&!celebration&&phase!==game.phase){game.reset();game.phase=phase;game.complete=phase===3;}
+ if(value&&!celebration&&phase!==game.phase){wearableMode('S');game.reset();game.phase=phase;game.complete=phase===3;}
  active=value;$('gameHUD').classList.toggle('visible',value);$('gamePanel').classList.toggle('visible',value);$('stage').classList.toggle('game-active',value);
  if(value){draw();if(phase===3)beginReturn()}else {weatherEffects(-1);weatherSound(-1)}
 }
@@ -42,15 +44,15 @@ function draw(){
  document.querySelectorAll('[data-weather-action]').forEach((b,i)=>{b.classList.toggle('current',i===phase);b.disabled=!!celebration||!!demo||i!==game.phase||complete});
 }
 function thunder(){rumble();thunderSound()}
-function celebrate(phase){celebration={phase};if(phase===2)thunder();draw();timer=setTimeout(()=>{if(!active||celebration?.phase!==phase)return;celebration=null;navigate(game.phase)},4000)}
-export function gameInput(pose,x,t){if(!active||celebration||demo)return;const old=game.phase;if(game.feed(pose,x,t))celebrate(old);else draw()}
+function celebrate(phase){wearableMode('S');celebration={phase};if(phase===2)thunder();draw();timer=setTimeout(()=>{if(!active||celebration?.phase!==phase)return;celebration=null;navigate(game.phase)},4000)}
+export function gameInput(pose,x,t){if(!active||celebration||demo)return;const old=game.phase,was=game.progress;if(game.feed(pose,x,t))celebrate(old);else {if(was===0&&game.progress>0)wearableMode(['W','R','T'][old]);draw()}}
 $('restartGame').onclick=()=>{cancelReturn();cancelPlayback();game.reset();navigate(0);draw()};
 $('sound').onclick=async()=>{try{const on=await toggleSound();$('sound').textContent=on?'Sound on':'Sound off';$('sound').setAttribute('aria-pressed',on)}catch{$('status').textContent='Audio could not start. Press Sound again to retry.'}};
 document.querySelectorAll('[data-weather-action]').forEach((b,i)=>b.onclick=()=>{
  if(!active||celebration||demo||i!==game.phase||game.complete)return;
- demo={phase:i,progress:game.progress};const start=performance.now(),from=game.progress;
+ demo={phase:i,progress:game.progress};wearableMode(['W','R','T'][i]);const start=performance.now(),from=game.progress;
  function animate(now){if(!demo||!active)return;demo.progress=Math.min(1,from+(1-from)*(now-start)/STAGE_DURATION);draw();if(demo.progress<1)demoFrame=requestAnimationFrame(animate);else{demo=null;game.advance();celebrate(i)}}
  demoFrame=requestAnimationFrame(animate)
 });
 
-window.addEventListener('pagehide',cancelReturn);
+window.addEventListener('pagehide',()=>{cancelReturn();wearableMode('S')});
